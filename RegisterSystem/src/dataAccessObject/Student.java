@@ -16,18 +16,16 @@ public class Student {
     private String name;
     private String surname;
     private String gender;
-    private Address address;
 
     public Student() {
     }
 
-    public Student(int studentID, int studentNo, String name, String surname, String gender, Address address) {
+    public Student(int studentID, int studentNo, String name, String surname, String gender) {
         this.studentID = studentID;
         this.studentNo = studentNo;
         this.name = name;
         this.surname = surname;
-        this.gender = gender;
-        this.address = address;
+        this.gender = gender;        
     }
 
     public int getStudentID() {
@@ -69,16 +67,5 @@ public class Student {
     public void setGender(String gender) {
         this.gender = gender;
     }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
-    }
-    
-    
-    
     
 }
