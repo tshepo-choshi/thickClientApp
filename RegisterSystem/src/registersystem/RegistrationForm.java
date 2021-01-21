@@ -5,6 +5,12 @@
  */
 package registersystem;
 
+import dataAccessObject.Address;
+import dataAccessObject.Dao;
+import dataAccessObject.Student;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author eliasc
@@ -17,7 +23,8 @@ public class RegistrationForm extends javax.swing.JFrame {
     public RegistrationForm() {
         initComponents();
     }
-
+    //DAO object
+    Dao dao = new Dao();
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -287,26 +294,148 @@ public class RegistrationForm extends javax.swing.JFrame {
 
     private void btnRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegisterActionPerformed
         // TODO add your handling code here:
+        try{
+            dao.openDatabase();
+            Student stud = new Student();
+            stud.setStudentNo(Integer.parseInt(txtStudentNo.getText()));
+            stud.setGender(txtGender.getText());
+            stud.setName(txtName.getText());
+            stud.setSurname(txtSurname.getText());
+            
+            Address ads = new Address();
+            ads.setHouseNo(Integer.parseInt(txtHouseNo.getText()));
+            ads.setStreetName(txtStreetName.getText());
+            ads.setCity(txtCity.getText());
+            ads.setPostalCode(Integer.parseInt(txtPostalCode.getText()));
+                    
+            int pass = dao.registerStudent(stud, ads);
+            if(pass > 1){
+                JOptionPane.showMessageDialog(null, "Registered Successfully");
+            }
+            dao.closeDatabase();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+        
     }//GEN-LAST:event_btnRegisterActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         // TODO add your handling code here:
+        try{
+            dao.openDatabase();
+            Student theStudent = null;
+            Address theAddress = null;
+            ArrayList<Object> objList = dao.search(Integer.parseInt(txtStudentNo.getText()));
+            for(Object instanceObj: objList){
+                if(instanceObj instanceof Student){
+                    theStudent = (Student) instanceObj;
+                }
+                if(instanceObj instanceof Student){
+                    theAddress = (Address) instanceObj;
+                }
+             }
+            
+            if(theStudent != null && theAddress != null){
+                txtStudentNo.setText(String.valueOf(theStudent.getStudentNo()));
+                txtGender.setText(theStudent.getGender());
+                txtName.setText(theStudent.getName());
+                txtSurname.setText(theStudent.getSurname());
+                
+                txtHouseNo.setText(String.valueOf(theAddress.getHouseNo()));
+                txtStreetName.setText(theAddress.getStreetName());
+                txtCity.setText(theAddress.getCity());
+                txtPostalCode.setText(String.valueOf(theAddress.getPostalCode()));
+            
+            }else{
+                JOptionPane.showMessageDialog(null, "Student not found on the system");
+            }
+            
+            dao.closeDatabase();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here:         
+        try{
+            dao.openDatabase();
+            Student stud = new Student();
+            stud.setStudentNo(Integer.parseInt(txtStudentNo.getText()));
+            stud.setGender(txtGender.getText());
+            stud.setName(txtName.getText());
+            stud.setSurname(txtSurname.getText());
+            
+            Address ads = new Address();
+            ads.setHouseNo(Integer.parseInt(txtHouseNo.getText()));
+            ads.setStreetName(txtStreetName.getText());
+            ads.setCity(txtCity.getText());
+            ads.setPostalCode(Integer.parseInt(txtPostalCode.getText()));
+            int pass = dao.update(stud, ads);
+            if(pass > 1) {
+                JOptionPane.showMessageDialog(null, "Updated Successfully");
+            }else{
+                JOptionPane.showMessageDialog(null, "Error whiile updating");
+            }
+            dao.closeDatabase();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }        
     }//GEN-LAST:event_btnUpdateActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // TODO add your handling code here:
+        try{
+            dao.openDatabase();
+            int pass = dao.delete(Integer.parseInt(txtStudentNo.getText()));
+            if(pass > 1){
+                 JOptionPane.showMessageDialog(null,"Record deleted successfully");
+            }else{
+                JOptionPane.showMessageDialog(null,"Failed to delete record");
+            }
+            dao.closeDatabase();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnRetrieveAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRetrieveAllActionPerformed
         // TODO add your handling code here:
+        this.btnClearActionPerformed(evt);        
+        try {
+            ArrayList<Object> objList = dao.retrieveAll();
+            Student stud = null;
+            Address ads = null;
+            for(int i = 0; i < objList.size(); i++){
+                if(objList.get(i) instanceof Student){
+                    stud = (Student) objList.get(i);
+                    tblDisplayAll.setValueAt(stud.getStudentNo(), i, 0);
+                    tblDisplayAll.setValueAt(stud.getName(), i, 1);
+                    tblDisplayAll.setValueAt(stud.getSurname(), i, 2);
+                    tblDisplayAll.setValueAt(stud.getGender(), i, 3); 
+                    ads = dao.getAddress(stud.getStudentNo());
+                    tblDisplayAll.setValueAt(ads.getHouseNo(), i, 4);
+                    tblDisplayAll.setValueAt(ads.getStreetName(), i, 5);
+                    tblDisplayAll.setValueAt(ads.getCity(), i, 6);
+                    tblDisplayAll.setValueAt(ads.getPostalCode(), i, 7);
+                } 
+            }
+            
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }        
     }//GEN-LAST:event_btnRetrieveAllActionPerformed
 
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
         // TODO add your handling code here:
+        txtStudentNo.setText("");
+        txtGender.setText("");
+        txtName.setText("");
+        txtSurname.setText("");
+        txtHouseNo.setText("");
+        txtStreetName.setText("");
+        txtCity.setText("");
+        txtPostalCode.setText("");
     }//GEN-LAST:event_btnClearActionPerformed
 
     /**
