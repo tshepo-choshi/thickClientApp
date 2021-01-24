@@ -330,7 +330,7 @@ public class RegistrationForm extends javax.swing.JFrame {
                 if(instanceObj instanceof Student){
                     theStudent = (Student) instanceObj;
                 }
-                if(instanceObj instanceof Student){
+                if(instanceObj instanceof Address){
                     theAddress = (Address) instanceObj;
                 }
              }

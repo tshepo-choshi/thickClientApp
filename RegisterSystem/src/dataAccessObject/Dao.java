@@ -35,31 +35,31 @@ public class Dao {
     
     public int registerStudent(Student student, Address address) throws SQLException{
         int pass = 0;
-        String sql = "insert into tblStudent(studentNo, name, surname, gender) values('"+student.getStudentNo()+"', '"+student.getName()+"', '"+student.getSurname()+"','"+student.getGender()+"')";
+        String sql = "insert into tblstudent(studentNo, name, surname, gender) values('"+student.getStudentNo()+"', '"+student.getName()+"', '"+student.getSurname()+"','"+student.getGender()+"')";
         pass += statement.executeUpdate(sql);        
         if(pass == 1){
             int theStudentNo = getMax(); 
-            pass += statement.executeUpdate("insert int tblAddress(studentNo, houseNo, streetName, city, postalCode) values('"+theStudentNo+"', '"+address.getHouseNo()+"', '"+address.getStreetName()+"', , '"+address.getCity()+"', , '"+address.getPostalCode()+"')");
+            pass += statement.executeUpdate("insert into tbladdress(studentNo, houseNo, streetName, city, postalCode) values('"+theStudentNo+"', '"+address.getHouseNo()+"', '"+address.getStreetName()+"', , '"+address.getCity()+"', , '"+address.getPostalCode()+"')");
         }
         return pass;
     }
     
     public int getMax() throws SQLException{
-        int pass = 0;
-        String sql = "select max(studentNo) from tblStudent";
+        int studentNo = -1;
+        String sql = "select max(studentNo) from tblstudent";
         ResultSet rs = statement.executeQuery(sql);
         if(rs.next()){
-            pass = rs.getInt(1);
+            studentNo = rs.getInt(1);
         }
-        return pass;
+        return studentNo;
     }
     //Should return 2
     public int delete(int studentNo) throws SQLException{
         int pass = 0;
-        String sql = "delete from tblStudent where studentNo = "+studentNo;        
+        String sql = "delete from tblstudent where studentNo = "+studentNo;        
         pass += statement.executeUpdate(sql);
         if(pass > 0){
-            String sql2 = "delete from tblAddress where studentNo = "+studentNo;
+            String sql2 = "delete from tbladdress where studentNo = "+studentNo;
             pass += statement.executeUpdate(sql2);
         }
         return pass;
@@ -67,7 +67,7 @@ public class Dao {
     
     public ArrayList<Object> search(int studentNo) throws SQLException{
         ArrayList<Object> objList = new ArrayList<>();
-        String sql = "select studentID, studentNo, name, surname, gender from tblStudent where studentNo = " + studentNo;       
+        String sql = "select studentID, studentNo, name, surname, gender from tblstudent where studentNo = " + studentNo;       
         ResultSet rs = statement.executeQuery(sql);
         Student student = null;
         if(rs.next()){           
@@ -81,7 +81,7 @@ public class Dao {
     
     public Address getAddress(int studentNo) throws SQLException{
         Address address = null;
-        String sql = "select addressID, studentNo, houseNo, streetName, city, postalCode from tblAddress where studentNo = " + studentNo;
+        String sql = "select addressID, studentNo, houseNo, streetName, city, postalCode from tbladdress where studentNo = " + studentNo;
         ResultSet rs = statement.executeQuery(sql);
         if(rs.next()){
             address = new Address(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getString(4), rs.getString(5), rs.getInt(6));
@@ -92,17 +92,17 @@ public class Dao {
     //Should return 2
     public int update(Student student, Address address) throws SQLException{    
         int pass = 0;    
-        String sql = "update tblStudent set name = '"+student.getName()+"', surname = '"+student.getSurname()+"', gender = '"+student.getGender()+"'  where studentNo = " + student.getStudentNo();
+        String sql = "update tblstudent set name = '"+student.getName()+"', surname = '"+student.getSurname()+"', gender = '"+student.getGender()+"'  where studentNo = " + student.getStudentNo();
         pass += statement.executeUpdate(sql);
         if(pass > 0){
-            pass += statement.executeUpdate("update tblAddress set houseNo = '"+address.getHouseNo()+"',  streetName = '"+address.getStreetName()+"', city = '"+address.getCity()+"', postalCode = '"+address.getPostalCode()+"' where  studentNo = '"+student.getStudentNo()+"'");
+            pass += statement.executeUpdate("update tbladdress set houseNo = '"+address.getHouseNo()+"',  streetName = '"+address.getStreetName()+"', city = '"+address.getCity()+"', postalCode = '"+address.getPostalCode()+"' where  studentNo = '"+student.getStudentNo()+"'");
         }        
         return pass;
     }
     
     public ArrayList<Object> retrieveAll() throws SQLException{
         ArrayList<Object> objList = new ArrayList<>();
-        String sql = "select studentID, studentNo, name, surname, gender from tblStudent";        
+        String sql = "select studentID, studentNo, name, surname, gender from tblstudent";        
         ResultSet rs = statement.executeQuery(sql);
         Student student = null;
         while(rs.next()){           
@@ -114,7 +114,7 @@ public class Dao {
     }
     
     public void getAddresses(ArrayList<Object> theList) throws SQLException{
-        String sql = "select addressID, studentNo, houseNo, streetName, city, postalCode from tblAddress";
+        String sql = "select addressID, studentNo, houseNo, streetName, city, postalCode from tbladdress";
         ResultSet rs = statement.executeQuery(sql);
         Address address = null;
         while(rs.next()){           
